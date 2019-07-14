@@ -1,6 +1,7 @@
 package com.github.akka.util
 
 import java.lang.reflect.{ParameterizedType, Type}
+import java.math.BigInteger
 
 import akka.http.javadsl.marshallers.jackson.Jackson
 import akka.http.scaladsl.marshalling._
@@ -10,7 +11,10 @@ import akka.util.ByteString
 import com.fasterxml.jackson.annotation.JsonInclude.Include
 import com.fasterxml.jackson.core.`type`.TypeReference
 import com.fasterxml.jackson.core.{JsonGenerator, JsonParser}
-import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper, SerializationFeature}
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import com.fasterxml.jackson.module.scala.experimental.ScalaObjectMapper
 import mesosphere.jackson.CaseClassModule
@@ -54,6 +58,10 @@ trait JacksonSupport {
   val defaultObjectMapper = new ObjectMapper() with ScalaObjectMapper
   val module = new DefaultScalaModule with CaseClassModule
 
+  // Java8 日期序列化反序列化处理
+  defaultObjectMapper.registerModule(new JavaTimeModule());
+  defaultObjectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
   // defaultObjectMapper.registerModule(DefaultScalaModule)
   defaultObjectMapper.registerModule(module)
 
@@ -64,6 +72,14 @@ trait JacksonSupport {
 
   // null 不序列化
   defaultObjectMapper.setSerializationInclusion(Include.NON_NULL)
+
+  val simpleModule = new SimpleModule();
+
+  /**
+    * 将Long,BigInteger序列化的时候,转化为String
+    */
+  simpleModule.addSerializer(classOf[java.lang.Long], ToStringSerializer.instance);
+  simpleModule.addSerializer(classOf[BigInteger], ToStringSerializer.instance);
 
   private val jsonStringUnmarshaller: FromEntityUnmarshaller[String] =
     Unmarshaller.byteStringUnmarshaller

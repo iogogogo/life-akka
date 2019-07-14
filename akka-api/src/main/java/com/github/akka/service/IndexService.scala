@@ -14,6 +14,6 @@ class IndexService extends ResultWrapper {
 
   def index(ctx: ImperativeRequestContext): Unit = {
     val now = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-    ctx.complete(successful(message = "小花脸", data = now))
+    ctx.complete(successful(message = "小花脸", data = LocalDateTime.now()))
   }
 }
