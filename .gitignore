@@ -38,3 +38,6 @@ git.properties
 *.log
 
 */code
+
+.DS_Store
+*/.DS_Store
