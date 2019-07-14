@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="2000" debug="false">
+
+    <!--
+    scan:
+    当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true。（这个功能可以在不重启运行环境下，调整打印日志的细节，方便定位问题）
+    scanPeriod:
+    设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+    debug:
+    当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+
+    Logger 可以被分配级别。级别包括：TRACE、DEBUG、INFO、WARN 和 ERROR
+
+    级别排序为： TRACE < DEBUG < INFO < WARN < ERROR
+    -->
+
+    <!-- springProperty 可以读取application.properties文件中的属性值，只有当logback文件名为logback-spring时，该配置才会生效 -->
+    <!--<springProperty scope="context" name="app.name" source="spring.application.name"/>-->
+    <!--<springProperty scope="context" name="log.home" source="logging.home"/>-->
+
+    <!-- 配置是logback默认的 -->
+    <property name="app.name" value="akka-api"/>
+    <property name="log.home" value="${user.dir}/logs"/>
+
+    <!-- %m输出的信息,%p日志级别,%t线程名,%d日期,%c类的全名,%i索引【从数字0开始递增】,,, -->
+    <!-- appender是configuration的子节点，是负责写日志的组件。 -->
+    <!-- ConsoleAppender：把日志输出到控制台 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{100} [%file:%line] %msg %n</pattern>
+            <!-- 控制台也要使用UTF-8，不要使用GBK，否则会中文乱码 -->
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+
+    <!-- info level -->
+    <appender name="file_info" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/${app.name}.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{100} [%file:%line] %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.home}/${app.name}.log.%i.zip</fileNamePattern>
+            <!-- 索引最小值，标识%i从1开始 -->
+            <minIndex>0</minIndex>
+            <!-- 索引最大值，标识%i到5结束，始终保留了5个归档文件 -->
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 文件大小超过100MB归档 -->
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- debug level -->
+    <appender name="file_debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/${app.name}.debug.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{100} [%file:%line] %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.home}/${app.name}.log.%i.zip</fileNamePattern>
+            <!-- 索引最小值，标识%i从1开始 -->
+            <minIndex>0</minIndex>
+            <!-- 索引最大值，标识%i到5结束，始终保留了5个归档文件 -->
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 文件大小超过100MB归档 -->
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- warn level -->
+    <appender name="file_warn" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/${app.name}.warn.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{100} [%file:%line] %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.home}/${app.name}.log.%i.zip</fileNamePattern>
+            <!-- 索引最小值，标识%i从1开始 -->
+            <minIndex>0</minIndex>
+            <!-- 索引最大值，标识%i到5结束，始终保留了5个归档文件 -->
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 文件大小超过100MB归档 -->
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!-- error level -->
+    <appender name="file_error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.home}/${app.name}.error.log</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{100} [%file:%line] %msg %n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${log.home}/${app.name}.log.%i.zip</fileNamePattern>
+            <!-- 索引最小值，标识%i从1开始 -->
+            <minIndex>0</minIndex>
+            <!-- 索引最大值，标识%i到5结束，始终保留了5个归档文件 -->
+            <maxIndex>5</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <!-- 文件大小超过100MB归档 -->
+            <maxFileSize>100MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+
+    <!-- level Options: ERROR, WARN, INFO, DEBUG -->
+    <!--
+    logger：日志所处的包或者具体的类
+    level：日志打印级别
+    -->
+    <!-- 打印sql 配置 如需打印 设置为debug -->
+    <logger name="com.example.mapper" level="DEBUG"/>
+
+    <root level="INFO">  <!-- Options: ERROR, WARN, INFO, DEBUG -->
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="file_debug"/>
+        <appender-ref ref="file_info"/>
+        <appender-ref ref="file_warn"/>
+        <appender-ref ref="file_error"/>
+    </root>
+</configuration>
